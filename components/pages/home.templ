@@ -1,0 +1,17 @@
+package pages
+
+import "github.com/hyperremix/handball-analyzer/components/partials"
+import "github.com/hyperremix/handball-analyzer/components/corecomponents"
+
+templ Home() {
+	<html lang="en">
+		<head>
+			@partials.Meta()
+			<title>Handball Analyzer</title>
+		</head>
+		<body class="bg-gray-900 text-white">
+			@partials.AppBar()
+			@corecomponents.Button(corecomponents.ButtonProps{Label: "test", Variant: "filled"})
+		</body>
+	</html>
+}
