@@ -55,7 +55,7 @@ docker-run:
 
 ## start: build and run local project
 .PHONY: start
-start: build
+start:
 	air
 
 ## css: build tailwindcss

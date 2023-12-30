@@ -2,8 +2,10 @@ package pages
 
 import "github.com/hyperremix/handball-analyzer/components/partials"
 import "github.com/hyperremix/handball-analyzer/components/corecomponents"
+import "github.com/hyperremix/handball-analyzer/model"
+import "strings"
 
-templ Home() {
+templ Home(seasons []model.Season) {
 	<html lang="en">
 		<head>
 			@partials.Meta()
@@ -11,6 +13,13 @@ templ Home() {
 		</head>
 		<body class="bg-gray-900 text-white">
 			@partials.AppBar()
+			for _, season := range seasons {
+				<div class="flex flex-col items-center justify-center">
+					<div class="text-xl">
+						{ strings.Join([]string{season.StartDate.Format("06"), season.EndDate.Format("06")}, "/") }
+					</div>
+				</div>
+			}
 			@corecomponents.Button(corecomponents.ButtonProps{Label: "test", Variant: "filled"})
 		</body>
 	</html>

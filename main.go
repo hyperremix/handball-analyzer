@@ -1,26 +1,40 @@
 package main
 
 import (
-	"github.com/hyperremix/handball-analyzer/components/pages"
-	"github.com/hyperremix/handball-analyzer/components/partials"
-	"github.com/hyperremix/handball-analyzer/services"
+	"os"
+
+	"github.com/hyperremix/handball-analyzer/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog"
 )
 
 func main() {
 	e := echo.New()
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "${time_rfc3339} | ${status}\t| ${latency_human}\t| ${method} | ${uri}\n",
+
+	logger := zerolog.New(os.Stdout)
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogStatus:  true,
+		LogLatency: true,
+		LogMethod:  true,
+		LogURI:     true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Timestamp().
+				Int("status", v.Status).
+				Dur("latency", v.Latency).
+				Str("method", v.Method).
+				Str("URI", v.URI).
+				Msg("request")
+
+			return nil
+		},
 	}))
 	e.Static("/assets", "./assets")
-	e.GET("/", func(c echo.Context) error {
-		return services.Render(c, pages.Home())
-	})
 
-	e.GET("/seasons", func(c echo.Context) error {
-		return services.Render(c, partials.Seasons())
-	})
+	handlers.DefineSeasonsRoutes(e)
+	handlers.DefineLeagueRoutes(e)
+	handlers.DefineTestRoutes(e)
 
 	e.Logger.Fatal(e.Start("localhost:8080"))
 }
