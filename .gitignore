@@ -7,3 +7,4 @@ assets/styles/main.css
 *_templ.go
 /handball-analyzer
 .DS_Store
+.env

@@ -1,0 +1,78 @@
+package partials
+
+import "github.com/hyperremix/handball-analyzer/model"
+import "strconv"
+
+templ LeagueDetailsPartial(leagueDetails model.LeagueDetailsResponse) {
+	<div id="container" class="max-w-6xl mx-auto">
+		<h1 class="text-4xl mt-2 mb-4">{ leagueDetails.Name }</h1>
+		<div class="relative overflow-x-auto">
+			<table class="w-full text-sm text-left text-gray-400">
+				<thead class="text-xs text uppercase text-gray-400">
+					<tr>
+						<th scope="col" class="px-6 py-3 w-px"></th>
+						<th scope="col" class="px-6 py-3"></th>
+						<th scope="col" class="px-2 py-3 w-px text-right">
+							Games
+						</th>
+						<th scope="col" class="px-2 py-3 w-px text-center">
+							W
+						</th>
+						<th scope="col" class="px-2 py-3 w-px text-center">
+							D
+						</th>
+						<th scope="col" class="px-2 py-3 w-px text-center">
+							L
+						</th>
+						<th scope="col" class="px-6 py-3 w-px text-center">
+							Goals
+						</th>
+						<th scope="col" class="px-6 py-3 w-px text-center">
+							Diff
+						</th>
+						<th scope="col" class="px-6 py-3 w-px text-right">
+							Points
+						</th>
+					</tr>
+				</thead>
+				<tbody class="shadow-md sm:rounded-lg">
+					for i, teamStat := range leagueDetails.TeamStats {
+						<tr class="odd:bg-gray-800">
+							<td class="px-6 py-3">
+								{ strconv.Itoa(i + 1) }
+							</td>
+							<td class="px-6 py-3">
+								{ teamStat.TeamName }
+							</td>
+							<td class="px-2 py-3 text-right font-bold">
+								{ strconv.Itoa(teamStat.GamesPlayed) }
+							</td>
+							<td class="px-2 py-3 text-center">
+								{ strconv.Itoa(teamStat.GamesWon) }
+							</td>
+							<td class="px-2 py-3 text-center">
+								{ strconv.Itoa(teamStat.GamesDrawn) }
+							</td>
+							<td class="px-2 py-3 text-center">
+								{ strconv.Itoa(teamStat.GamesLost) }
+							</td>
+							<td class="px-6 py-3 text-center">
+								{ strconv.Itoa(teamStat.Goals) }:{ strconv.Itoa(teamStat.GoalsAgainst) }
+							</td>
+							<td class="px-6 py-3 text-center text-lg">
+								if (teamStat.GoalDifference > 0) {
+									<span class="text-green-500">+{ strconv.Itoa(teamStat.GoalDifference) }</span>
+								} else {
+									<span class="text-red-500">{ strconv.Itoa(teamStat.GoalDifference) }</span>
+								}
+							</td>
+							<td class="px-6 py-3 text-right text-lg">
+								{ strconv.Itoa(teamStat.Points) }:{ strconv.Itoa(teamStat.PointsAgainst) }
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}

@@ -1,0 +1,45 @@
+package partials
+
+templ GameResultsRow() {
+}
+
+// type gameResultSizeProps struct {
+// 	teamLogoSize string
+// 	teamNameSize string
+// 	scoreSize    string
+// 	spacing      int
+// }
+
+// var sizesMap = map[string]gameResultSizeProps{
+// 	"small": {
+// 		teamLogoSize: "45px",
+// 		teamNameSize: "text-sm",
+// 		scoreSize:    "text-md",
+// 		spacing:      1,
+// 	},
+// 	"large": {
+// 		teamLogoSize: "75px",
+// 		teamNameSize: "text-lg",
+// 		scoreSize:    "text-2xl",
+// 		spacing:      2,
+// 	},
+// }
+
+// templ GameResultsRow(game model.Game, homeTeam model.Team, awayTeam model.Team, size string) {
+// 	<div class={ fmt.Sprintf("flex flex-row gap-%v", sizesMap[size].spacing) }>
+// 		<div class={ fmt.Sprintf("flex flex-1 flex-row justify-end items-center gap-2 p-%v", sizesMap[size].spacing) }>
+// 			<span>{ homeTeam.Name }</span>
+// 		</div>
+// 		<div class="flex flex-row">
+// 			<div class="flex justify-center items-center p-1 bg-gray-700 shadow-md">
+// 				<span class="text-2xl">{ strconv.Itoa(int(game.FulltimeScoreHome)) }</span>
+// 			</div>
+// 			<div class="flex justify-center items-center p-1 bg-gray-700 shadow-md">
+// 				<span class="text-2xl">{ strconv.Itoa(int(game.FulltimeScoreAway)) }</span>
+// 			</div>
+// 		</div>
+// 		<div class={ fmt.Sprintf("flex flex-1 flex-row items-center gap-2 p-%v", sizesMap[size].spacing) }>
+// 			<span>{ awayTeam.Name }</span>
+// 		</div>
+// 	</div>
+// }

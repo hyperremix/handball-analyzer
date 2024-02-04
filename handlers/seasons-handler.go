@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"context"
+
 	"github.com/hyperremix/handball-analyzer/components/pages"
 	"github.com/hyperremix/handball-analyzer/db"
-	"github.com/hyperremix/handball-analyzer/model"
+	"github.com/hyperremix/handball-analyzer/environment"
 	"github.com/hyperremix/handball-analyzer/services"
+	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,9 +16,22 @@ func DefineSeasonsRoutes(e *echo.Echo) {
 }
 
 func getSeasons(c echo.Context) error {
-	var seasons []model.Season
+	ctx := context.Background()
 
-	db.Get().Find(&seasons)
+	conn, err := pgx.Connect(ctx, environment.DB_CONNECTION_STRING)
+	if err != nil {
+		return err
+	}
+	defer conn.Close(ctx)
 
-	return services.Render(c, pages.Home(seasons))
+	queries := db.New(conn)
+
+	seasonRows, err := queries.ListSeasons(ctx)
+	if err != nil {
+		return err
+	}
+
+	seasonResponses := services.MapRowsToSeasonResponses(seasonRows)
+
+	return services.Render(c, pages.SeasonsBase(seasonResponses))
 }

@@ -1,0 +1,16 @@
+package pages
+
+import (
+	"github.com/hyperremix/handball-analyzer/components/partials"
+	"github.com/hyperremix/handball-analyzer/model"
+)
+
+templ LeagueListBase(response model.LeagueListResponse) {
+	<html lang="en">
+		@partials.Head()
+		<body class="bg-gray-900 text-white">
+			@partials.AppBar()
+			@partials.LeagueListPartial(response)
+		</body>
+	</html>
+}

@@ -1,7 +1,6 @@
 package handballnet
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,90 +9,63 @@ import (
 	"github.com/hyperremix/handball-analyzer/model"
 )
 
-func mapTeamMembers(players []player, staffMembers []staffMember, teamID uint) ([]model.TeamMember, error) {
-	var teamMembers []model.TeamMember
+func mapTeamMembers(players []player, staffMembers []staffMember, teamID int64) []db.UpsertTeamMemberParams {
+	var teamMembers []db.UpsertTeamMemberParams
 
-	mappedPlayers, err := mapPlayers(players, teamID)
-	if err != nil {
-		return []model.TeamMember{}, err
-	}
+	mappedPlayers := mapPlayers(players, teamID)
 
-	mappedStaffMembers, err := mapStaffMembers(staffMembers, teamID)
-	if err != nil {
-		return []model.TeamMember{}, err
-	}
+	mappedStaffMembers := mapStaffMembers(staffMembers, teamID)
 
 	teamMembers = append(teamMembers, mappedPlayers...)
 	teamMembers = append(teamMembers, mappedStaffMembers...)
 
-	return teamMembers, nil
+	return teamMembers
 }
 
-func mapPlayers(players []player, teamID uint) ([]model.TeamMember, error) {
-	var teamMembers []model.TeamMember
+func mapPlayers(players []player, teamID int64) []db.UpsertTeamMemberParams {
+	var teamMembers []db.UpsertTeamMemberParams
 
 	for _, player := range players {
-		mappedTeamMember, err := mapPlayer(player, teamID)
-		if err != nil {
-			return []model.TeamMember{}, err
-		}
+		mappedTeamMember := mapPlayer(player, teamID)
 		teamMembers = append(teamMembers, mappedTeamMember)
 	}
 
-	return teamMembers, nil
+	return teamMembers
 }
 
-func mapPlayer(player player, teamID uint) (model.TeamMember, error) {
-	var teamMember model.TeamMember
-
+func mapPlayer(player player, teamID int64) db.UpsertTeamMemberParams {
 	stringNumber := strconv.Itoa(player.Number)
-
-	if err := db.Get().Where(&model.TeamMember{
-		UID: getTeamMemberUID(teamID, player.ID, player.Firstname, player.Lastname, stringNumber),
-	}).Attrs(model.TeamMember{
+	return db.UpsertTeamMemberParams{
+		Uid:    getTeamMemberUID(teamID, player.ID, player.Firstname, player.Lastname, stringNumber),
 		TeamID: teamID,
 		Name:   strings.Join([]string{player.Firstname, player.Lastname}, " "),
 		Number: stringNumber,
-		Type:   model.TeamMemberTypePlayer,
-	}).FirstOrCreate(&teamMember).Error; err != nil {
-		return model.TeamMember{}, fmt.Errorf("error creating player: %s", err)
+		Type:   string(model.TeamMemberTypePlayer),
 	}
-
-	return teamMember, nil
 }
 
-func mapStaffMembers(staffMembers []staffMember, teamID uint) ([]model.TeamMember, error) {
-	var teamMembers []model.TeamMember
+func mapStaffMembers(staffMembers []staffMember, teamID int64) []db.UpsertTeamMemberParams {
+	var teamMembers []db.UpsertTeamMemberParams
 
 	for _, staffMember := range staffMembers {
-		mappedTeamMember, err := mapStaffMember(staffMember, teamID)
-		if err != nil {
-			return []model.TeamMember{}, err
-		}
+		mappedTeamMember := mapStaffMember(staffMember, teamID)
 		teamMembers = append(teamMembers, mappedTeamMember)
 	}
 
-	return teamMembers, nil
+	return teamMembers
 }
 
-func mapStaffMember(staffMember staffMember, teamID uint) (model.TeamMember, error) {
-	var teamMember model.TeamMember
-
-	if err := db.Get().Where(&model.TeamMember{
-		UID: getTeamMemberUID(teamID, staffMember.ID, staffMember.Firstname, staffMember.Lastname, staffMember.Position),
-	}).Attrs(model.TeamMember{
+func mapStaffMember(staffMember staffMember, teamID int64) db.UpsertTeamMemberParams {
+	return db.UpsertTeamMemberParams{
+		Uid:    getTeamMemberUID(teamID, staffMember.ID, staffMember.Firstname, staffMember.Lastname, staffMember.Position),
 		TeamID: teamID,
 		Name:   strings.Join([]string{staffMember.Firstname, staffMember.Lastname}, " "),
 		Number: staffMember.Position,
-		Type:   model.TeamMemberTypeOfficial,
-	}).FirstOrCreate(&teamMember).Error; err != nil {
-		return model.TeamMember{}, fmt.Errorf("error creating staff member: %s", err)
+		Type:   string(model.TeamMemberTypeOfficial),
 	}
-
-	return teamMember, nil
 }
 
-func getTeamMemberUID(teamID uint, teamMemberUID string, firstname string, lastname string, number string) string {
+func getTeamMemberUID(teamID int64, teamMemberUID string, firstname string, lastname string, number string) string {
 	reg := regexp.MustCompile(`(\.-\d+)$`)
 	matches := reg.Match([]byte(teamMemberUID))
 	if !matches {

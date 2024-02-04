@@ -1,0 +1,24 @@
+package partials
+
+import (
+	"fmt"
+
+	"github.com/hyperremix/handball-analyzer/model"
+)
+
+templ LeagueListPartial(response model.LeagueListResponse) {
+	<div id="container" class="max-w-md mx-auto">
+		<h1 class="text-4xl mt-2 mb-4">{ response.SeasonName }</h1>
+		for _, league := range response.Leagues {
+			<div
+ 				hx-get={ fmt.Sprintf("/seasons/%v/leagues/%v", response.SeasonID, league.ID) }
+ 				hx-target="#container"
+ 				hx-swap="outerHTML"
+ 				hx-push-url="true"
+ 				class="block py-3 border rounded-lg shadow bg-gray-800 border-gray-700 hover:bg-gray-700  cursor-pointer flex flex-col items-center"
+			>
+				<span class="text-xl font-bold tracking-tight">{ league.Name }</span>
+			</div>
+		}
+	</div>
+}

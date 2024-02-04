@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func mapScore(scoreString string) (uint, uint, error) {
+func mapScore(scoreString string) (int32, int32, error) {
 	homeAndAway := strings.Split(scoreString, ":")
 
 	homeScore, err := strconv.Atoi(homeAndAway[0])
@@ -18,5 +18,5 @@ func mapScore(scoreString string) (uint, uint, error) {
 		return 0, 0, err
 	}
 
-	return uint(homeScore), uint(awayScore), nil
+	return int32(homeScore), int32(awayScore), nil
 }

@@ -67,3 +67,13 @@ css:
 .PHONY: css-watch
 css-watch:
 	npx tailwindcss -i assets/styles/input.css -o assets/styles/main.css --watch
+
+## new-migration: create new tern migration
+.PHONY: new-migration
+new-migration:
+	TERN_MIGRATIONS=db/migrations tern new migration ${name}
+
+## db-migrate: run tern migrations
+.PHONY: db-migrate
+db-migrate:
+	TERN_MIGRATIONS=db/migrations tern migrate

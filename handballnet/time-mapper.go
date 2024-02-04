@@ -4,13 +4,22 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func mapTime(timestamp int64) time.Time {
 	return time.Unix(timestamp/1000, 0)
 }
 
-func mapElapsedSeconds(minutesAndSecondsString string) (uint, error) {
+func mapTimestamptz(timestamp int64) pgtype.Timestamptz {
+	return pgtype.Timestamptz{
+		Time:  mapTime(timestamp),
+		Valid: true,
+	}
+}
+
+func mapElapsedSeconds(minutesAndSecondsString string) (int32, error) {
 	minutesAndSeconds := strings.Split(minutesAndSecondsString, ":")
 
 	minutes, err := strconv.Atoi(minutesAndSeconds[0])
@@ -23,5 +32,5 @@ func mapElapsedSeconds(minutesAndSecondsString string) (uint, error) {
 		return 0, err
 	}
 
-	return uint(minutes*60 + seconds), nil
+	return int32(minutes*60 + seconds), nil
 }

@@ -1,38 +1,29 @@
 package handballnet
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/hyperremix/handball-analyzer/db"
 	"github.com/hyperremix/handball-analyzer/model"
 )
 
-func mapReferees(referees []referee) ([]model.Referee, error) {
-	var mappedReferees []model.Referee
+func mapReferees(referees []referee) []db.UpsertRefereeParams {
+	var mappedReferees []db.UpsertRefereeParams
 
 	for _, referee := range referees {
-		mappedReferee, err := mapReferee(referee)
-		if err != nil {
-			return mappedReferees, err
-		}
+		mappedReferee := mapReferee(referee)
 		mappedReferees = append(mappedReferees, mappedReferee)
 	}
 
-	return mappedReferees, nil
+	return mappedReferees
 }
 
-func mapReferee(referee referee) (model.Referee, error) {
-	var mappedReferee model.Referee
-
-	if err := db.Get().Where(&model.Referee{UID: referee.ID}).Attrs(model.Referee{
+func mapReferee(referee referee) db.UpsertRefereeParams {
+	return db.UpsertRefereeParams{
+		Uid:  referee.ID,
 		Name: strings.Join([]string{referee.Firstname, referee.Lastname}, " "),
-		Type: mapRefereeType(referee.Position),
-	}).FirstOrCreate(&mappedReferee).Error; err != nil {
-		return model.Referee{}, fmt.Errorf("error creating referee: %s", err)
+		Type: string(mapRefereeType(referee.Position)),
 	}
-
-	return mappedReferee, nil
 }
 
 func mapRefereeType(position string) model.RefereeType {
